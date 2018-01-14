@@ -1,4 +1,4 @@
-package main
+package repl
 
 import (
 	"os"
@@ -18,7 +18,7 @@ func Echo(args ...cmd_repl.Argument) interface{} {
 	return strings.Join(echo, " ")
 }
 
-func main() {
+func StartRepl() {
 	r := repl.New()
 	r.RegisterCommand("echo", Echo)
 	go r.Start()
