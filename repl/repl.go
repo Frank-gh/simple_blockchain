@@ -5,11 +5,11 @@ import (
 	"os/signal"
 	"strings"
 
-	"github.com/garslo/go-cmd-repl"
-	"github.com/garslo/go-cmd-repl/repl"
+	"github.com/Frank-gh/go-cmd-repl"
+	"github.com/Frank-gh/go-cmd-repl/repl"
 )
 
-func Echo(args ...cmd_repl.Argument) interface{} {
+func echo(args ...cmd_repl.Argument) interface{} {
 	echo := make([]string, len(args))
 	for i, arg := range args {
 		s, _ := arg.AsString()
@@ -18,9 +18,20 @@ func Echo(args ...cmd_repl.Argument) interface{} {
 	return strings.Join(echo, " ")
 }
 
+func exit(args ...cmd_repl.Argument) interface{} {
+	os.Exit(0)
+	return nil
+}
+
+func enter(args ...cmd_repl.Argument) interface{} {
+	return " "
+}
+
 func StartRepl() {
 	r := repl.New()
-	r.RegisterCommand("echo", Echo)
+	r.RegisterCommand("echo", echo)
+	r.RegisterCommand("exit", exit)
+	r.RegisterCommand("", enter)
 	go r.Start()
 
 	// Do other things
