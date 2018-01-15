@@ -1,12 +1,14 @@
 package repl
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 	"strings"
 
 	"github.com/Frank-gh/go-cmd-repl"
 	"github.com/Frank-gh/go-cmd-repl/repl"
+	"github.com/Frank-gh/simple_blockchain/command"
 )
 
 func echo(args ...cmd_repl.Argument) interface{} {
@@ -18,20 +20,37 @@ func echo(args ...cmd_repl.Argument) interface{} {
 	return strings.Join(echo, " ")
 }
 
+// client exit
 func exit(args ...cmd_repl.Argument) interface{} {
+	// Do sth.
+	fmt.Println("Simple Blockchain exit !")
 	os.Exit(0)
 	return nil
 }
 
-func enter(args ...cmd_repl.Argument) interface{} {
-	return " "
+func help(args ...cmd_repl.Argument) interface{} {
+	return command.Comm.Help()
+}
+
+func mine(args ...cmd_repl.Argument) interface{} {
+	param := make([]string, len(args))
+	for i, arg := range args {
+		s, _ := arg.AsString()
+		param[i] = strings.Trim(s, "\n")
+	}
+	str := strings.Join(param, " ")
+	if str == "" {
+		return command.Comm.Help()
+	}
+	return command.Comm.Mine(str)
 }
 
 func StartRepl() {
 	r := repl.New()
 	r.RegisterCommand("echo", echo)
 	r.RegisterCommand("exit", exit)
-	r.RegisterCommand("", enter)
+	r.RegisterCommand("help", help)
+	r.RegisterCommand("mine", mine)
 	go r.Start()
 
 	// Do other things
