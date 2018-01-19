@@ -45,12 +45,40 @@ func mine(args ...cmd_repl.Argument) interface{} {
 	return command.Comm.Mine(str)
 }
 
+func open(args ...cmd_repl.Argument) interface{} {
+	param := make([]string, len(args))
+	for i, arg := range args {
+		s, _ := arg.AsString()
+		param[i] = strings.Trim(s, "\n")
+	}
+
+	if len(param) != 2 {
+		return command.Comm.Help()
+	}
+	return command.Comm.Open(param[0], param[1])
+}
+
+func connect(args ...cmd_repl.Argument) interface{} {
+	param := make([]string, len(args))
+	for i, arg := range args {
+		s, _ := arg.AsString()
+		param[i] = strings.Trim(s, "\n")
+	}
+
+	if len(param) != 2 {
+		return command.Comm.Help()
+	}
+	return command.Comm.Connect(param[0], param[1])
+}
+
 func StartRepl() {
 	r := repl.New()
 	r.RegisterCommand("echo", echo)
 	r.RegisterCommand("exit", exit)
 	r.RegisterCommand("help", help)
 	r.RegisterCommand("mine", mine)
+	r.RegisterCommand("open", open)
+	r.RegisterCommand("connect", connect)
 	go r.Start()
 
 	// Do other things
