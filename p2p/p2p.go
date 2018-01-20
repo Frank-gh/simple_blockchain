@@ -7,6 +7,8 @@ import (
 	"github.com/golang/glog"
 )
 
+type FuncHandler func([]byte, *tcpnetwork.Connection)
+
 var (
 	StopSrv         = make(chan struct{})
 	StopCli         = make(chan struct{})
@@ -14,18 +16,20 @@ var (
 	Peer            *peer
 )
 
+type peer struct {
+	svrPeers map[string]*tcpnetwork.Connection
+	cliPeers map[string]*tcpnetwork.Connection
+	peerName string
+}
+
 func init() {
 	Peer = &peer{
 		svrPeers: make(map[string]*tcpnetwork.Connection),
 		cliPeers: make(map[string]*tcpnetwork.Connection),
 		peerName: "",
 	}
-}
-
-type peer struct {
-	svrPeers map[string]*tcpnetwork.Connection
-	cliPeers map[string]*tcpnetwork.Connection
-	peerName string
+	AddHandler("index", onIndex)
+	AddHandler("block", onBlock)
 }
 
 func (this *peer) AddServer(sName string, pServer *tcpnetwork.Connection) {
@@ -83,6 +87,8 @@ func runServer(server *tcpnetwork.TCPNetwork) {
 				case tcpnetwork.KConnEvent_Connected:
 					{
 						Peer.AddClient(evt.Conn.GetRemoteAddress(), evt.Conn)
+						Peer.SetPeerName(evt.Conn.GetLocalAddress())
+						sendIndex(evt.Conn)
 						glog.Info("Client ", evt.Conn.GetRemoteAddress(), " connected")
 					}
 				case tcpnetwork.KConnEvent_Close:
@@ -92,7 +98,9 @@ func runServer(server *tcpnetwork.TCPNetwork) {
 					}
 				case tcpnetwork.KConnEvent_Data:
 					{
-						evt.Conn.Send(evt.Data, 0)
+						text := string(evt.Data)
+						glog.Info("server recv : ", text)
+						handleInput(evt.Data, evt.Conn)
 					}
 				}
 			}
@@ -118,6 +126,8 @@ EVENTLOOP:
 					{
 						// save server
 						Peer.AddServer(evt.Conn.GetRemoteAddress(), cliConn)
+						Peer.SetPeerName(evt.Conn.GetLocalAddress())
+						sendIndex(evt.Conn)
 						glog.Info("Input any thing")
 						atomic.StoreInt32(&serverConnected, 1)
 					}
@@ -132,7 +142,8 @@ EVENTLOOP:
 				case tcpnetwork.KConnEvent_Data:
 					{
 						text := string(evt.Data)
-						glog.Info(evt.Conn.GetRemoteAddress(), ":", text)
+						glog.Info("client recv : ", text)
+						handleInput(evt.Data, evt.Conn)
 					}
 				}
 			}

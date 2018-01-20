@@ -22,11 +22,11 @@ func (this *command) Help() string {
 
 func (this *command) Mine(data string) string {
 	newblock := blockchain.BlockChain.GenerateNextBlock(data)
-	if err := blockchain.BlockChain.IsValidNewBlock(newblock, blockchain.BlockChain.CurBlock); err != nil {
+
+	if err := blockchain.BlockChain.AddBlock(newblock); err != nil {
 		return err.Error()
 	}
-	blockchain.BlockChain.AddBlock(newblock)
-	return newblock.Hash
+	return blockchain.BlockChain.DumpBlockchain()
 }
 
 func (this *command) Open(host, port string) string {

@@ -1,16 +1,17 @@
 package block
 
 import (
+	"strconv"
 	"time"
 )
 
 type Block struct {
-	Index        int64  `json:index`
-	PreviousHash string `json:previousHash`
-	Timestamp    int64  `json:timestamp`
-	Data         string `json:data`
-	Hash         string `json:hash`
-	Nonce        int64  `json:nonce`
+	Index        int64
+	PreviousHash string
+	Timestamp    int64
+	Data         string
+	Hash         string
+	Nonce        int64
 }
 
 // 创建新块
@@ -35,4 +36,15 @@ func NewInitBlock() *Block {
 		Hash:         "",
 		Nonce:        0,
 	}
+}
+
+func (this *Block) DumpBlock() string {
+	ret := "------------------------------------------------------------\n"
+	ret += "|Index				|" + strconv.FormatInt(this.Index, 10) + "\n"
+	ret += "|PreviousHash		|" + this.PreviousHash + "\n"
+	ret += "|Timestamp			|" + strconv.FormatInt(this.Timestamp, 10) + "\n"
+	ret += "|Data				|" + this.Data + "\n"
+	ret += "|Hash				|" + this.Hash + "\n"
+	ret += "|Nonce				|" + strconv.FormatInt(this.Nonce, 10) + "\n"
+	return ret
 }

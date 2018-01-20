@@ -2,6 +2,7 @@ package blockchain
 
 import (
 	"errors"
+	"sync"
 	"time"
 
 	"github.com/Frank-gh/simple_blockchain/blockchain/block"
@@ -14,6 +15,7 @@ type blockchain struct {
 	CurBlock   *block.Block
 	Blocks     map[int64]*block.Block
 	Difficulty uint
+	Locker     *sync.Mutex
 }
 
 func NewBlockChain() *blockchain {
@@ -21,6 +23,7 @@ func NewBlockChain() *blockchain {
 		CurBlock:   block.NewInitBlock(),
 		Blocks:     make(map[int64]*block.Block),
 		Difficulty: 5,
+		Locker:     new(sync.Mutex),
 	}
 }
 
@@ -76,7 +79,25 @@ func (this *blockchain) IsValidNewBlock(newBlock, preBlock *block.Block) error {
 	return nil
 }
 
-func (this *blockchain) AddBlock(newBlock *block.Block) {
+func (this *blockchain) AddBlock(newBlock *block.Block) error {
+	this.Locker.Lock()
+	defer func() { this.Locker.Unlock() }()
+	if err := this.IsValidNewBlock(newBlock, this.CurBlock); err != nil {
+		return err
+	}
 	this.CurBlock = newBlock
 	this.Blocks[newBlock.Index] = newBlock
+	return nil
+}
+
+func (this *blockchain) Index() int64 {
+	return int64(len(this.Blocks) - 1)
+}
+
+func (this *blockchain) DumpBlockchain() string {
+	var ret string
+	for _, blk := range this.Blocks {
+		ret += blk.DumpBlock() + "\n"
+	}
+	return ret
 }
