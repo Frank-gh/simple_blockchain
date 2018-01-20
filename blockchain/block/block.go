@@ -41,7 +41,7 @@ func NewInitBlock() *Block {
 func (this *Block) DumpBlock() string {
 	ret := "------------------------------------------------------------\n"
 	ret += "|Index				|" + strconv.FormatInt(this.Index, 10) + "\n"
-	ret += "|PreviousHash		|" + this.PreviousHash + "\n"
+	ret += "|PreviousHash			|" + this.PreviousHash + "\n"
 	ret += "|Timestamp			|" + strconv.FormatInt(this.Timestamp, 10) + "\n"
 	ret += "|Data				|" + this.Data + "\n"
 	ret += "|Hash				|" + this.Hash + "\n"
