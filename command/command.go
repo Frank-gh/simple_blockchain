@@ -1,6 +1,11 @@
 package command
 
 import (
+	"fmt"
+	"os"
+	"strings"
+	"time"
+
 	"github.com/Frank-gh/simple_blockchain/blockchain"
 	"github.com/Frank-gh/simple_blockchain/p2p"
 )
@@ -21,11 +26,15 @@ func (this *command) Help() string {
 }
 
 func (this *command) Mine(data string) string {
+	quit := make(chan bool)
+	go ProgressBar(quit)
 	newblock := blockchain.BlockChain.GenerateNextBlock(data)
 
 	if err := blockchain.BlockChain.AddBlock(newblock); err != nil {
 		return err.Error()
 	}
+	quit <- true
+	fmt.Println()
 	return blockchain.BlockChain.DumpBlockchain()
 }
 
@@ -39,4 +48,14 @@ func (this *command) Connect(host, port string) string {
 
 func init() {
 	Comm = new(command)
+}
+
+func ProgressBar(quit chan bool) {
+	for i := 0; i < 50; i++ {
+		time.Sleep(100 * time.Millisecond)
+		h := strings.Repeat("=", i) + strings.Repeat(" ", 49-i)
+		fmt.Printf("\r%.0f%%[%s]", float64(i)/49*100, h)
+		os.Stdout.Sync()
+	}
+	<-quit
 }
