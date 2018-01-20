@@ -13,15 +13,15 @@ var BlockChain *blockchain
 
 type blockchain struct {
 	CurBlock   *block.Block
-	Blocks     map[int64]*block.Block
+	Blocks     []*block.Block
 	Difficulty uint
 	Locker     *sync.Mutex
 }
 
 func NewBlockChain() *blockchain {
 	return &blockchain{
-		CurBlock:   block.NewInitBlock(),
-		Blocks:     make(map[int64]*block.Block),
+		CurBlock: block.NewInitBlock(),
+		//Blocks:     make(map[int64]*block.Block),
 		Difficulty: 5,
 		Locker:     new(sync.Mutex),
 	}
@@ -33,7 +33,7 @@ func CalculateHashForBlock(blk block.Block) string {
 
 func init() {
 	BlockChain = NewBlockChain()
-	BlockChain.Blocks[BlockChain.CurBlock.Index] = BlockChain.CurBlock
+	BlockChain.Blocks = append(BlockChain.Blocks, BlockChain.CurBlock)
 }
 
 func (this *blockchain) GenerateNextBlock(data string) *block.Block {
@@ -86,7 +86,7 @@ func (this *blockchain) AddBlock(newBlock *block.Block) error {
 		return err
 	}
 	this.CurBlock = newBlock
-	this.Blocks[newBlock.Index] = newBlock
+	this.Blocks = append(this.Blocks, newBlock)
 	return nil
 }
 
