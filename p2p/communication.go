@@ -29,7 +29,7 @@ func sendBlock(index int64, conn *tcpnetwork.Connection) {
 		blockchain.BlockChain.Locker.Unlock()
 	}()
 	for idx, block := range blockchain.BlockChain.Blocks {
-		if idx > index {
+		if int64(idx) > index {
 			pkg_block := &block_pkg{
 				Index:        block.Index,
 				PreviousHash: block.PreviousHash,
