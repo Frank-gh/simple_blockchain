@@ -101,5 +101,8 @@ func onBlock(data []byte, conn *tcpnetwork.Connection) {
 		return
 	}
 	fmt.Println()
-	fmt.Println(blockchain.BlockChain.DumpBlockchain())
+	//fmt.Println(blockchain.BlockChain.DumpBlockchain())
+
+	// dump recv Block
+	blk.DumpBlock()
 }
