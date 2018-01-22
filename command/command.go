@@ -13,11 +13,12 @@ import (
 func Help() string {
 	help := "===  Welcome to Simple Blockchain ! ===\n"
 	help += "  Command:\n"
-	help += "    help    [command...]  \t\tProvides help for a given command.\n"
-	help += "    exit                  \t\tExits application.\n"
-	help += "    mine    <data>        \t\tMine a new block. Eg: mine 50$.\n"
-	help += "    open    <host> <port> \t\tOpen port to accept incoming connections. Eg: open localhost 7365.\n"
-	help += "    connect <host> <port> \t\tConnect to a new peer. Eg: connect localhost 7365.\n"
+	help += "    help       [command...]  \t\tProvides help for a given command.\n"
+	help += "    exit                     \t\tExits application.\n"
+	help += "    mine       <data>        \t\tMine a new block. Eg: mine 50$.\n"
+	help += "    open       <host> <port> \t\tOpen port to accept incoming connections. Eg: open localhost 7365.\n"
+	help += "    connect    <host> <port> \t\tConnect to a new peer. Eg: connect localhost 7365.\n"
+	help += "    blockchain <host> <port> \t\tSee the current state of the blockchain.\n"
 	return help
 }
 

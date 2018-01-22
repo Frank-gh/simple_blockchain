@@ -82,11 +82,18 @@ func (this *blockchain) IsValidNewBlock(newBlock, preBlock *block.Block) error {
 func (this *blockchain) AddBlock(newBlock *block.Block) error {
 	this.Locker.Lock()
 	defer func() { this.Locker.Unlock() }()
+
+	// 如果新快小于当前链的长度，则用新快覆盖当前链上的块
+	if newBlock.Index <= this.Index() {
+		this.CurBlock = this.Blocks[newBlock.Index-1]
+		this.Blocks = this.Blocks[:newBlock.Index]
+	}
 	if err := this.IsValidNewBlock(newBlock, this.CurBlock); err != nil {
 		return err
 	}
 	this.CurBlock = newBlock
 	this.Blocks = append(this.Blocks, newBlock)
+
 	return nil
 }
 

@@ -56,9 +56,9 @@ func sendBlock(index int64, conn *tcpnetwork.Connection) {
 	}
 
 }
-func sendIndex(conn *tcpnetwork.Connection) {
+func sendIndex(index int64, conn *tcpnetwork.Connection) {
 	pkg_index := &index_pkg{
-		Index: blockchain.BlockChain.Index(),
+		Index: index,
 	}
 	data, err := json.Marshal(pkg_index)
 	if err != nil {
@@ -75,6 +75,7 @@ func sendIndex(conn *tcpnetwork.Connection) {
 	}
 	conn.Send(send_pkg, 0)
 }
+
 func onIndex(data []byte, conn *tcpnetwork.Connection) {
 	pkg := &index_pkg{}
 	err := json.Unmarshal(data, pkg)
@@ -98,11 +99,12 @@ func onBlock(data []byte, conn *tcpnetwork.Connection) {
 	blk := block.NewBlock(pkg.Index, pkg.Timestamp, pkg.Nonce, pkg.PreviousHash, pkg.Data, pkg.Hash)
 	if err := blockchain.BlockChain.AddBlock(blk); err != nil {
 		glog.Error(err.Error())
+		sendIndex(int64(0), conn)
 		return
 	}
 	fmt.Println()
 	//fmt.Println(blockchain.BlockChain.DumpBlockchain())
 
 	// dump recv Block
-	blk.DumpBlock()
+	fmt.Println(blk.DumpBlock())
 }

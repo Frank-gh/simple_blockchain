@@ -3,6 +3,7 @@ package p2p
 import (
 	"sync/atomic"
 
+	"github.com/Frank-gh/simple_blockchain/blockchain"
 	"github.com/Frank-gh/tcpnetwork"
 	"github.com/golang/glog"
 )
@@ -88,7 +89,7 @@ func runServer(server *tcpnetwork.TCPNetwork) {
 					{
 						Peer.AddClient(evt.Conn.GetRemoteAddress(), evt.Conn)
 						Peer.SetPeerName(evt.Conn.GetLocalAddress())
-						sendIndex(evt.Conn)
+						sendIndex(blockchain.BlockChain.Index(), evt.Conn)
 						glog.Info("Client ", evt.Conn.GetRemoteAddress(), " connected")
 					}
 				case tcpnetwork.KConnEvent_Close:
@@ -127,7 +128,7 @@ EVENTLOOP:
 						// save server
 						Peer.AddServer(evt.Conn.GetRemoteAddress(), cliConn)
 						Peer.SetPeerName(evt.Conn.GetLocalAddress())
-						sendIndex(evt.Conn)
+						sendIndex(blockchain.BlockChain.Index(), evt.Conn)
 						glog.Info("Input any thing")
 						atomic.StoreInt32(&serverConnected, 1)
 					}
