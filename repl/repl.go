@@ -81,8 +81,6 @@ func StartRepl() {
 	r.RegisterCommand("connect", connect)
 	go r.Start()
 
-	// Do other things
-
 	quit := make(chan os.Signal)
 	signal.Notify(quit, os.Kill, os.Interrupt)
 	<-quit
