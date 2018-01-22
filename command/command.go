@@ -10,11 +10,7 @@ import (
 	"github.com/Frank-gh/simple_blockchain/p2p"
 )
 
-type command struct{}
-
-var Comm *command
-
-func (this *command) Help() string {
+func Help() string {
 	help := "===  Welcome to Simple Blockchain ! ===\n"
 	help += "  Command:\n"
 	help += "    help    [command...]  \t\tProvides help for a given command.\n"
@@ -25,7 +21,7 @@ func (this *command) Help() string {
 	return help
 }
 
-func (this *command) Mine(data string) string {
+func Mine(data string) string {
 	quit := make(chan bool)
 	go ProgressBar(quit)
 	newblock := blockchain.BlockChain.GenerateNextBlock(data)
@@ -38,16 +34,16 @@ func (this *command) Mine(data string) string {
 	return blockchain.BlockChain.DumpBlockchain()
 }
 
-func (this *command) Open(host, port string) string {
+func Open(host, port string) string {
 	return p2p.OpenPort(host, port)
 }
 
-func (this *command) Connect(host, port string) string {
+func Connect(host, port string) string {
 	return p2p.Connect(host, port)
 }
 
-func init() {
-	Comm = new(command)
+func Blockchain() string {
+	return blockchain.BlockChain.DumpBlockchain()
 }
 
 func ProgressBar(quit chan bool) {

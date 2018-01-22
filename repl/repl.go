@@ -29,7 +29,7 @@ func exit(args ...cmd_repl.Argument) interface{} {
 }
 
 func help(args ...cmd_repl.Argument) interface{} {
-	return command.Comm.Help()
+	return command.Help()
 }
 
 func mine(args ...cmd_repl.Argument) interface{} {
@@ -40,9 +40,9 @@ func mine(args ...cmd_repl.Argument) interface{} {
 	}
 	str := strings.Join(param, " ")
 	if str == "" {
-		return command.Comm.Help()
+		return command.Help()
 	}
-	return command.Comm.Mine(str)
+	return command.Mine(str)
 }
 
 func open(args ...cmd_repl.Argument) interface{} {
@@ -53,9 +53,9 @@ func open(args ...cmd_repl.Argument) interface{} {
 	}
 
 	if len(param) != 2 {
-		return command.Comm.Help()
+		return command.Help()
 	}
-	return command.Comm.Open(param[0], param[1])
+	return command.Open(param[0], param[1])
 }
 
 func connect(args ...cmd_repl.Argument) interface{} {
@@ -66,9 +66,12 @@ func connect(args ...cmd_repl.Argument) interface{} {
 	}
 
 	if len(param) != 2 {
-		return command.Comm.Help()
+		return command.Help()
 	}
-	return command.Comm.Connect(param[0], param[1])
+	return command.Connect(param[0], param[1])
+}
+func blockchain(args ...cmd_repl.Argument) interface{} {
+	return command.Blockchain()
 }
 
 func StartRepl() {
