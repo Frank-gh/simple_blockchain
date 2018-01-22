@@ -81,6 +81,8 @@ func StartRepl() {
 	r.RegisterCommand("help", help)
 	r.RegisterCommand("mine", mine)
 	r.RegisterCommand("open", open)
+	r.RegisterCommand("blockchain", blockchain)
+	r.RegisterCommand("bc", blockchain)
 	r.RegisterCommand("connect", connect)
 	go r.Start()
 
