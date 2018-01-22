@@ -30,11 +30,11 @@ func NewBlock(index, timestamp, nonce int64, previousHash, data, hash string) *B
 func NewInitBlock() *Block {
 	return &Block{
 		Index:        0,
-		PreviousHash: "0",
+		PreviousHash: "0000000000000000000000000000000000000000000000000000000000000000",
 		Timestamp:    time.Now().UTC().UnixNano(),
 		Data:         "Shylock's Simple Blockchain!",
-		Hash:         "",
-		Nonce:        0,
+		Hash:         "000006030393fbbf48010544a74edca75ecd36bde25a198a623ce13ea20e29e4",
+		Nonce:        7365,
 	}
 }
 
