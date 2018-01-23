@@ -32,6 +32,15 @@ func broadCastBlock() {
 	}
 }
 
+func broadCastIndex() {
+	for _, cli := range Peer.cliPeers {
+		sendIndex(blockchain.BlockChain.Index(), cli)
+	}
+	for _, svr := range Peer.svrPeers {
+		sendIndex(blockchain.BlockChain.Index(), svr)
+	}
+}
+
 func sendCurBlock(conn *tcpnetwork.Connection) {
 	blockchain.BlockChain.Locker.Lock()
 	defer func() {

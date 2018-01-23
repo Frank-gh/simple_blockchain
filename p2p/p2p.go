@@ -2,6 +2,7 @@ package p2p
 
 import (
 	"sync/atomic"
+	"time"
 
 	"github.com/Frank-gh/simple_blockchain/blockchain"
 	"github.com/Frank-gh/tcpnetwork"
@@ -15,6 +16,7 @@ var (
 	StopCli         = make(chan struct{})
 	serverConnected int32
 	Peer            *peer
+	timer           = time.NewTicker(1 * time.Second)
 )
 
 type peer struct {
@@ -76,6 +78,7 @@ func Connect(host, port string) string {
 }
 
 func runServer(server *tcpnetwork.TCPNetwork) {
+	var activeConn *tcpnetwork.Connection = nil
 	for {
 		select {
 		case evt, ok := <-server.GetEventQueue():
@@ -90,6 +93,7 @@ func runServer(server *tcpnetwork.TCPNetwork) {
 						Peer.AddClient(evt.Conn.GetRemoteAddress(), evt.Conn)
 						Peer.SetPeerName(evt.Conn.GetLocalAddress())
 						sendIndex(blockchain.BlockChain.Index(), evt.Conn)
+						activeConn = evt.Conn
 						glog.Info("Client ", evt.Conn.GetRemoteAddress(), " connected")
 					}
 				case tcpnetwork.KConnEvent_Close:
@@ -105,6 +109,12 @@ func runServer(server *tcpnetwork.TCPNetwork) {
 					}
 				}
 			}
+		case <-timer.C:
+			{
+				if activeConn != nil {
+					sendIndex(blockchain.BlockChain.Index(), activeConn)
+				}
+			}
 		case <-StopSrv:
 			{
 				return
@@ -114,6 +124,7 @@ func runServer(server *tcpnetwork.TCPNetwork) {
 }
 
 func runClient(client *tcpnetwork.TCPNetwork, cliConn *tcpnetwork.Connection) {
+	var activeConn *tcpnetwork.Connection = nil
 EVENTLOOP:
 	for {
 		select {
@@ -129,7 +140,8 @@ EVENTLOOP:
 						Peer.AddServer(evt.Conn.GetRemoteAddress(), cliConn)
 						Peer.SetPeerName(evt.Conn.GetLocalAddress())
 						sendIndex(blockchain.BlockChain.Index(), evt.Conn)
-						glog.Info("Input any thing")
+						glog.Info("Connected to server")
+						activeConn = evt.Conn
 						atomic.StoreInt32(&serverConnected, 1)
 					}
 				case tcpnetwork.KConnEvent_Close:
@@ -137,6 +149,7 @@ EVENTLOOP:
 						// delete server
 						Peer.DelServer(evt.Conn.GetRemoteAddress())
 						glog.Info("Disconnected from server")
+						activeConn = nil
 						atomic.StoreInt32(&serverConnected, 0)
 						break EVENTLOOP
 					}
@@ -146,6 +159,12 @@ EVENTLOOP:
 						glog.Info("client recv : ", text)
 						handleInput(evt.Data, evt.Conn)
 					}
+				}
+			}
+		case <-timer.C:
+			{
+				if activeConn != nil {
+					sendIndex(blockchain.BlockChain.Index(), activeConn)
 				}
 			}
 		case <-StopCli:
