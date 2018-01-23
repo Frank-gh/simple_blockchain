@@ -23,6 +23,45 @@ func handleInput(data []byte, conn *tcpnetwork.Connection) {
 	}
 	handlers[pkg.Type](pkg.Data, conn)
 }
+func broadCastBlock() {
+	for _, cli := range Peer.cliPeers {
+		sendCurBlock(cli)
+	}
+	for _, svr := range Peer.svrPeers {
+		sendCurBlock(svr)
+	}
+}
+
+func sendCurBlock(conn *tcpnetwork.Connection) {
+	blockchain.BlockChain.Locker.Lock()
+	defer func() {
+		blockchain.BlockChain.Locker.Unlock()
+	}()
+	block := blockchain.BlockChain.CurBlock
+	pkg_block := &block_pkg{
+		Index:        block.Index,
+		PreviousHash: block.PreviousHash,
+		Timestamp:    block.Timestamp,
+		Data:         block.Data,
+		Hash:         block.Hash,
+		Nonce:        block.Nonce,
+	}
+	data, err := json.Marshal(pkg_block)
+	if err != nil {
+		glog.Error(err.Error())
+	}
+	pkg := &json_pkg{
+		Type:     "block",
+		PeerName: Peer.peerName,
+		Data:     data,
+	}
+	send_pkg, err := json.Marshal(pkg)
+	if err != nil {
+		glog.Error(err.Error())
+	}
+	conn.Send(send_pkg, 0)
+}
+
 func sendBlock(index int64, conn *tcpnetwork.Connection) {
 	blockchain.BlockChain.Locker.Lock()
 	defer func() {
@@ -56,6 +95,7 @@ func sendBlock(index int64, conn *tcpnetwork.Connection) {
 	}
 
 }
+
 func sendIndex(index int64, conn *tcpnetwork.Connection) {
 	pkg_index := &index_pkg{
 		Index: index,
@@ -96,14 +136,15 @@ func onBlock(data []byte, conn *tcpnetwork.Connection) {
 	if err != nil {
 		glog.Error(err.Error())
 	}
+
 	blk := block.NewBlock(pkg.Index, pkg.Timestamp, pkg.Nonce, pkg.PreviousHash, pkg.Data, pkg.Hash)
+
 	if err := blockchain.BlockChain.AddBlock(blk); err != nil {
 		glog.Error(err.Error())
 		sendIndex(int64(0), conn)
 		return
 	}
 	fmt.Println()
-	//fmt.Println(blockchain.BlockChain.DumpBlockchain())
 
 	// dump recv Block
 	fmt.Println(blk.DumpBlock())
