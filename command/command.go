@@ -10,6 +10,10 @@ import (
 	"github.com/Frank-gh/simple_blockchain/p2p"
 )
 
+var (
+	timer = time.NewTicker(100 * time.Millisecond)
+)
+
 func Help() string {
 	help := "===  Welcome to Simple Blockchain ! ===\n"
 	help += "  Command:\n"
@@ -48,11 +52,20 @@ func Blockchain() string {
 }
 
 func ProgressBar(quit chan bool) {
-	for i := 0; i < 50; i++ {
-		time.Sleep(100 * time.Millisecond)
-		h := strings.Repeat("=", i) + strings.Repeat(" ", 49-i)
-		fmt.Printf("\r%.0f%%[%s]", float64(i)/49*100, h)
-		os.Stdout.Sync()
+	i := 0
+	for {
+		select {
+		case <-quit:
+			{
+				return
+			}
+		case <-timer.C:
+			{
+				h := strings.Repeat(">", i)
+				fmt.Printf("\r%s", h)
+				os.Stdout.Sync()
+				i++
+			}
+		}
 	}
-	<-quit
 }
