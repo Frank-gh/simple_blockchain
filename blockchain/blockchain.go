@@ -11,11 +11,12 @@ import (
 
 var BlockChain *blockchain
 
+// 区块链结构
 type blockchain struct {
-	CurBlock   *block.Block
-	Blocks     []*block.Block
-	Difficulty uint
-	Locker     *sync.Mutex
+	CurBlock   *block.Block   //当前最新的区块
+	Blocks     []*block.Block //区块数组，用于存储连续的区块
+	Difficulty uint           //难度系数
+	Locker     *sync.Mutex    //锁
 }
 
 func NewBlockChain() *blockchain {
