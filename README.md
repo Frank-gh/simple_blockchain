@@ -31,3 +31,7 @@ type peer struct {
 	peerName string
 }
 ```
+
+```
+go get -v github.com/Frank-gh/simple_blockchain
+```
