@@ -8,5 +8,5 @@ import (
 
 func main() {
 	flag.Parse()
-	repl.StartRepl()
+	repl.StartRepl() // 启动交互式控制台
 }

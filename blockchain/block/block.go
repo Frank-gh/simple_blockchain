@@ -5,13 +5,14 @@ import (
 	"time"
 )
 
+// 区块的数据结构
 type Block struct {
-	Index        int64
-	PreviousHash string
-	Timestamp    int64
-	Data         string
-	Hash         string
-	Nonce        int64
+	Index        int64  // 块编号
+	PreviousHash string // 前一个快的哈希
+	Timestamp    int64  // 时间戳
+	Data         string // 存储的数据
+	Hash         string // 当前块的哈希
+	Nonce        int64  // 随机数
 }
 
 // 创建新块
@@ -26,7 +27,7 @@ func NewBlock(index, timestamp, nonce int64, previousHash, data, hash string) *B
 	}
 }
 
-// 初始化块
+// 初始化块（原始快）
 func NewInitBlock() *Block {
 	return &Block{
 		Index:        0,
@@ -38,6 +39,7 @@ func NewInitBlock() *Block {
 	}
 }
 
+// 打印块信息
 func (this *Block) DumpBlock() string {
 	ret := "------------------------------------------------------------\n"
 	ret += "|Index				|" + strconv.FormatInt(this.Index, 10) + "\n"
